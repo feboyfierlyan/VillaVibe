@@ -1,13 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:flutter/foundation.dart';
 import '../../domain/models/app_user.dart';
 
 part 'auth_repository.g.dart';
 
 class AuthRepository {
   final FirebaseAuth _auth;
+
   final FirebaseFirestore _firestore;
+  ConfirmationResult? _webConfirmationResult;
 
   AuthRepository(this._auth, this._firestore);
 
@@ -66,33 +71,126 @@ class AuthRepository {
 
   Future<void> signInWithGoogle() async {
     try {
-      // Create a new provider
-      GoogleAuthProvider googleProvider = GoogleAuthProvider();
+      if (kIsWeb) {
+        // Web-specific Google Sign-In
+        GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        googleProvider.addScope('email');
+        googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
+        await _signInWithProvider(googleProvider);
+      } else {
+        // Mobile Google Sign-In
+        final GoogleSignIn googleSignIn = GoogleSignIn();
+        final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-      // Once signed in, return the UserCredential
-      final UserCredential userCredential =
-          await _auth.signInWithProvider(googleProvider);
+        if (googleUser != null) {
+          final GoogleSignInAuthentication googleAuth =
+              await googleUser.authentication;
 
-      // Check if user exists in Firestore, if not create
-      final user = userCredential.user;
-      if (user != null) {
-        final doc = await _firestore.collection('users').doc(user.uid).get();
-        if (!doc.exists) {
-          final appUser = AppUser(
-            uid: user.uid,
-            email: user.email ?? '',
-            displayName: user.displayName ?? 'User',
-            photoUrl: user.photoURL ?? '',
-            isHost: false,
+          final OAuthCredential credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
           );
-          await _firestore
-              .collection('users')
-              .doc(user.uid)
-              .set(appUser.toMap());
+
+          await _signInWithCredential(credential);
         }
       }
     } catch (e) {
       throw Exception('Failed to sign in with Google: $e');
+    }
+  }
+
+
+
+
+
+  Future<void> _signInWithProvider(AuthProvider provider) async {
+    try {
+      final UserCredential userCredential =
+          await _auth.signInWithPopup(provider);
+      await _createUserInFirestore(userCredential.user);
+    } catch (e) {
+      // Fallback to redirect if popup fails (common on mobile web)
+      // For now just rethrow, but in prod consider signInWithRedirect
+      rethrow;
+    }
+  }
+
+  Future<void> _signInWithCredential(AuthCredential credential) async {
+    final UserCredential userCredential =
+        await _auth.signInWithCredential(credential);
+    await _createUserInFirestore(userCredential.user);
+  }
+
+  Future<void> _createUserInFirestore(User? user) async {
+    if (user != null) {
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (!doc.exists) {
+        final appUser = AppUser(
+          uid: user.uid,
+          email: user.email ?? '',
+          displayName: user.displayName ?? 'User',
+          photoUrl: user.photoURL ?? '',
+          isHost: false,
+        );
+        await _firestore.collection('users').doc(user.uid).set(appUser.toMap());
+      }
+    }
+  }
+
+  Future<void> verifyPhoneNumber({
+    required String phoneNumber,
+    required Function(String, int?) onCodeSent,
+    required Function(FirebaseAuthException) onVerificationFailed,
+    required Function(PhoneAuthCredential) onVerificationCompleted,
+    required Function(String) onCodeAutoRetrievalTimeout,
+  }) async {
+    if (kIsWeb) {
+      try {
+        _webConfirmationResult = await _auth.signInWithPhoneNumber(phoneNumber);
+        // On web, we don't get a verification ID in the same way, 
+        // but we need to trigger the callback to move to the next step.
+        // We pass a dummy verification ID.
+        onCodeSent('web_verification_id', null);
+      } catch (e) {
+        onVerificationFailed(
+          FirebaseAuthException(
+            code: 'web-auth-failed',
+            message: e.toString(),
+          ),
+        );
+      }
+    } else {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await _signInWithCredential(credential);
+          onVerificationCompleted(credential);
+        },
+        verificationFailed: onVerificationFailed,
+        codeSent: onCodeSent,
+        codeAutoRetrievalTimeout: onCodeAutoRetrievalTimeout,
+      );
+    }
+  }
+
+  Future<void> signInWithPhoneCredential(String verificationId, String smsCode) async {
+    try {
+      if (kIsWeb) {
+        if (_webConfirmationResult != null) {
+          final userCredential = await _webConfirmationResult!.confirm(smsCode);
+          await _createUserInFirestore(userCredential.user);
+        } else {
+          throw Exception('Web confirmation result is missing');
+        }
+      } else {
+        final credential = PhoneAuthProvider.credential(
+          verificationId: verificationId,
+          smsCode: smsCode,
+        );
+        await _signInWithCredential(credential);
+      }
+    } catch (e) {
+      throw Exception('Failed to sign in with phone: $e');
     }
   }
 

@@ -5,9 +5,11 @@ import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 import 'package:villavibe/features/auth/data/repositories/auth_repository.dart';
 import 'package:villavibe/features/auth/presentation/widgets/login_step_view.dart';
 import 'package:villavibe/features/auth/presentation/widgets/password_step_view.dart';
+import 'package:villavibe/features/auth/presentation/widgets/password_step_view.dart';
+import 'package:villavibe/features/auth/presentation/widgets/phone_verification_step_view.dart';
 import 'package:villavibe/features/auth/presentation/widgets/signup_step_view.dart';
 
-enum AuthStep { email, password, signup }
+enum AuthStep { email, password, signup, phoneVerification }
 
 void showLoginModal(BuildContext context) {
   WoltModalSheet.show(
@@ -36,6 +38,8 @@ class _LoginFlowContent extends ConsumerStatefulWidget {
 class _LoginFlowContentState extends ConsumerState<_LoginFlowContent> {
   AuthStep _currentStep = AuthStep.email;
   String _email = '';
+  String _phoneNumber = '';
+  String? _verificationId;
   bool _isLoading = false;
 
   void _handleEmailContinue(String email) async {
@@ -68,6 +72,80 @@ class _LoginFlowContentState extends ConsumerState<_LoginFlowContent> {
     setState(() => _isLoading = true);
     try {
       await ref.read(authRepositoryProvider).signInWithGoogle();
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+
+
+
+
+  void _handlePhoneSignIn(String phoneNumber) async {
+    setState(() {
+      _isLoading = true;
+      _phoneNumber = phoneNumber;
+    });
+
+    try {
+      await ref.read(authRepositoryProvider).verifyPhoneNumber(
+            phoneNumber: phoneNumber,
+            onCodeSent: (verificationId, resendToken) {
+              if (mounted) {
+                setState(() {
+                  _verificationId = verificationId;
+                  _currentStep = AuthStep.phoneVerification;
+                  _isLoading = false;
+                });
+              }
+            },
+            onVerificationFailed: (e) {
+              if (mounted) {
+                setState(() => _isLoading = false);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.message ?? 'Verification failed')),
+                );
+              }
+            },
+            onVerificationCompleted: (credential) async {
+              // Auto-resolution (Android only usually)
+              // We can sign in directly here
+              // For now, let's just handle it same as manual code entry if possible
+              // or just sign in
+            },
+            onCodeAutoRetrievalTimeout: (verificationId) {
+              if (mounted) {
+                setState(() {
+                  _verificationId = verificationId;
+                });
+              }
+            },
+          );
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
+  }
+
+  void _handleOtpVerification(String otp) async {
+    if (_verificationId == null) return;
+
+    setState(() => _isLoading = true);
+    try {
+      await ref
+          .read(authRepositoryProvider)
+          .signInWithPhoneCredential(_verificationId!, otp);
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
@@ -138,7 +216,9 @@ class _LoginFlowContentState extends ConsumerState<_LoginFlowContent> {
       case AuthStep.email:
         return LoginStepView(
           onContinue: _handleEmailContinue,
+          onPhoneContinue: _handlePhoneSignIn,
           onGoogleSignIn: _handleGoogleSignIn,
+
           isLoading: _isLoading,
         );
       case AuthStep.password:
@@ -152,6 +232,14 @@ class _LoginFlowContentState extends ConsumerState<_LoginFlowContent> {
         return SignupStepView(
           email: _email,
           onSignup: _handleSignup,
+          onBack: _goBack,
+          isLoading: _isLoading,
+        );
+      case AuthStep.phoneVerification:
+        return PhoneVerificationStepView(
+          phoneNumber: _phoneNumber,
+          onVerify: _handleOtpVerification,
+          onResend: () => _handlePhoneSignIn(_phoneNumber),
           onBack: _goBack,
           isLoading: _isLoading,
         );

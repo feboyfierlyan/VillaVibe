@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
 class SignupStepView extends StatefulWidget {
@@ -60,6 +60,18 @@ class _SignupStepViewState extends State<SignupStepView> {
       initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFFE31C5F),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -75,6 +87,7 @@ class _SignupStepViewState extends State<SignupStepView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Header
           Row(
             children: [
               IconButton(
@@ -82,11 +95,12 @@ class _SignupStepViewState extends State<SignupStepView> {
                 onPressed: widget.onBack,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
+                splashRadius: 24,
               ),
               Expanded(
                 child: Text(
                   'Finish signing up',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                   textAlign: TextAlign.center,
@@ -105,25 +119,61 @@ class _SignupStepViewState extends State<SignupStepView> {
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           const SizedBox(height: 8),
-          TextFormField(
-            controller: _firstNameController,
-            decoration: const InputDecoration(
-              labelText: 'First name on ID',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-              ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-          ),
-          TextFormField(
-            controller: _lastNameController,
-            decoration: const InputDecoration(
-              labelText: 'Last name on ID',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular(8)),
-              ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: TextFormField(
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: 'First name on ID',
+                      labelStyle: TextStyle(color: Colors.grey[600]),
+                      prefixIcon: const Icon(Icons.person_outline, size: 20),
+                      prefixIconConstraints: const BoxConstraints(minWidth: 40),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    style: const TextStyle(fontSize: 16),
+                    validator: (value) =>
+                        value?.isEmpty ?? true ? 'Required' : null,
+                  ),
+                ),
+                Divider(height: 1, color: Colors.grey[200]),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: TextFormField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Last name on ID',
+                      labelStyle: TextStyle(color: Colors.grey[600]),
+                      prefixIcon: const Icon(Icons.person_outline, size: 20),
+                      prefixIconConstraints: const BoxConstraints(minWidth: 40),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    style: const TextStyle(fontSize: 16),
+                    validator: (value) =>
+                        value?.isEmpty ?? true ? 'Required' : null,
+                  ),
+                ),
+              ],
             ),
-            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
           ),
           const SizedBox(height: 8),
           Text(
@@ -141,24 +191,36 @@ class _SignupStepViewState extends State<SignupStepView> {
           const SizedBox(height: 8),
           InkWell(
             onTap: () => _selectDate(context),
+            borderRadius: BorderRadius.circular(12),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    _selectedDate == null
-                        ? 'Birthdate'
-                        : DateFormat('dd/MM/yyyy').format(_selectedDate!),
-                    style: TextStyle(
-                      color: _selectedDate == null
-                          ? Colors.grey[600]
-                          : Colors.black,
-                      fontSize: 16,
+                  const SizedBox(width: 8),
+                  const Icon(Icons.calendar_today_outlined, size: 20, color: Colors.grey),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _selectedDate == null
+                          ? 'Birthdate'
+                          : DateFormat('dd/MM/yyyy').format(_selectedDate!),
+                      style: TextStyle(
+                        color: _selectedDate == null
+                            ? Colors.grey[600]
+                            : Colors.black,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                   const Icon(Icons.keyboard_arrow_down),
@@ -180,17 +242,32 @@ class _SignupStepViewState extends State<SignupStepView> {
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           const SizedBox(height: 8),
-          TextFormField(
-            initialValue: widget.email,
-            readOnly: true,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[100], // Keep slightly grey for read-only
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            style: const TextStyle(color: Colors.grey),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: TextFormField(
+              initialValue: widget.email,
+              readOnly: true,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.email_outlined, size: 20),
+                prefixIconConstraints: BoxConstraints(minWidth: 40),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 16),
+              ),
+              style: const TextStyle(color: Colors.grey, fontSize: 16),
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -206,36 +283,55 @@ class _SignupStepViewState extends State<SignupStepView> {
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           const SizedBox(height: 8),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: !_showPassword,
-            decoration: InputDecoration(
-              labelText: 'Password',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              suffixIcon: TextButton(
-                onPressed: () {
-                  setState(() {
-                    _showPassword = !_showPassword;
-                  });
-                },
-                child: Text(
-                  _showPassword ? 'Hide' : 'Show',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: TextFormField(
+              controller: _passwordController,
+              obscureText: !_showPassword,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                labelStyle: TextStyle(color: Colors.grey[600]),
+                prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                prefixIconConstraints: const BoxConstraints(minWidth: 40),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                suffixIcon: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _showPassword = !_showPassword;
+                    });
+                  },
+                  child: Text(
+                    _showPassword ? 'Hide' : 'Show',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ),
+              style: const TextStyle(fontSize: 16),
+              validator: (value) {
+                if (value == null || value.length < 6) {
+                  return 'Password must be at least 6 characters';
+                }
+                return null;
+              },
             ),
-            validator: (value) {
-              if (value == null || value.length < 6) {
-                return 'Password must be at least 6 characters';
-              }
-              return null;
-            },
           ),
 
           const SizedBox(height: 24),
@@ -247,15 +343,18 @@ class _SignupStepViewState extends State<SignupStepView> {
 
           const SizedBox(height: 24),
 
+          // Agree and Continue Button
           ElevatedButton(
             onPressed: widget.isLoading ? null : _submit,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
+              backgroundColor: const Color(0xFFE31C5F),
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
+              minimumSize: const Size(double.infinity, 48),
             ),
             child: widget.isLoading
                 ? const SizedBox(
@@ -286,6 +385,7 @@ class _SignupStepViewState extends State<SignupStepView> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
+                activeColor: const Color(0xFFE31C5F),
               ),
               Expanded(
                 child: Text(
@@ -296,7 +396,7 @@ class _SignupStepViewState extends State<SignupStepView> {
             ],
           ),
         ],
-      ),
+      ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.1, end: 0),
     );
   }
 }

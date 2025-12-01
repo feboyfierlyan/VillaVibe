@@ -22,6 +22,8 @@ dependencies:
   firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
   firebase_storage: ^12.3.0
+  google_sign_in: ^6.2.1
+
 
   # UI & Assets
   google_fonts: ^6.1.0
@@ -36,6 +38,8 @@ dependencies:
   uuid: ^4.3.3
   shared_preferences: ^2.5.3
   wolt_modal_sheet: ^0.11.0
+  country_picker: ^2.0.25
+  pinput: ^4.0.0
   lucide_icons: ^0.257.0
   google_maps_flutter: ^2.14.0
   geolocator: ^14.0.2
@@ -47,6 +51,7 @@ dependencies:
   cloud_functions: ^5.6.2
   webview_flutter: ^4.13.0
   webview_flutter_web: ^0.2.3+4
+  font_awesome_flutter: ^10.12.0
 
 
 dev_dependencies:

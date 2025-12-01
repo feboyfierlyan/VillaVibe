@@ -2,22 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../domain/models/category.dart';
 
-class CategorySelector extends StatefulWidget {
+class CategorySelector extends StatelessWidget {
   final List<Category> categories;
+  final String? selectedCategoryId;
   final Function(Category category) onCategoryChanged;
 
   const CategorySelector({
     super.key,
     required this.categories,
+    required this.selectedCategoryId,
     required this.onCategoryChanged,
   });
-
-  @override
-  State<CategorySelector> createState() => _CategorySelectorState();
-}
-
-class _CategorySelectorState extends State<CategorySelector> {
-  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -26,22 +21,24 @@ class _CategorySelectorState extends State<CategorySelector> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        itemCount: widget.categories.length,
+        itemCount: categories.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          final category = widget.categories[index];
-          final isSelected = _selectedIndex == index;
+          final category = categories[index];
+          // If selectedCategoryId is null, it means "All" is selected (usually index 0 if we handle it that way)
+          // But better logic is: if selectedCategoryId is null, and this category is "All", then it's selected.
+          // OR, we just rely on ID matching.
+          // Let's assume "All" has a specific ID or we handle null = All.
+          // In GuestHomeScreen, we will ensure "All" has a null ID or specific ID.
+          // Let's assume we match by ID.
+          final isSelected = category.id == selectedCategoryId ||
+              (selectedCategoryId == null && category.label == 'All');
 
           return Material(
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(30),
-              onTap: () {
-                setState(() {
-                  _selectedIndex = index;
-                });
-                widget.onCategoryChanged(category);
-              },
+              onTap: () => onCategoryChanged(category),
               // ✨ MAGISNYA DI SINI: AnimatedContainer ✨
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),

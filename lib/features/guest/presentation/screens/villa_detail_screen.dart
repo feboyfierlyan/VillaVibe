@@ -326,9 +326,20 @@ class _VillaDetailScreenState extends ConsumerState<VillaDetailScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          '${property.setting.isNotEmpty ? property.setting : 'Entire rental unit'} in ${property.address}',
-          style: const TextStyle(fontSize: 16, color: Colors.black87),
+        Builder(
+          builder: (context) {
+            String displayAddress = property.address;
+            // Check if address looks like coordinates (e.g. "-8.409, 115.188")
+            final isCoordinates = RegExp(r'^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$').hasMatch(property.address);
+            if (isCoordinates) {
+              displayAddress = 'Bali';
+            }
+            
+            return Text(
+              '${property.setting.isNotEmpty ? property.setting : 'Entire rental unit'} in $displayAddress',
+              style: const TextStyle(fontSize: 16, color: Colors.black87),
+            );
+          }
         ),
         const SizedBox(height: 4),
         Text(
