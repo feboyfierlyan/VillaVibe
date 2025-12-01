@@ -7,13 +7,44 @@ import 'package:villavibe/features/host/presentation/providers/host_onboarding_p
 import 'package:villavibe/features/host/presentation/widgets/bouncy_button.dart';
 import 'package:villavibe/features/host/presentation/widgets/location_picker_modal.dart';
 
-class StepBasics extends ConsumerWidget {
+class StepBasics extends ConsumerStatefulWidget {
   const StepBasics({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StepBasics> createState() => _StepBasicsState();
+}
+
+class _StepBasicsState extends ConsumerState<StepBasics> {
+  late TextEditingController _addressController;
+
+  @override
+  void initState() {
+    super.initState();
+    _addressController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(hostOnboardingNotifierProvider);
     final notifier = ref.read(hostOnboardingNotifierProvider.notifier);
+
+    // Sync controller with state if it changed externally (e.g. from map picker)
+    ref.listen(hostOnboardingNotifierProvider, (previous, next) {
+      if (previous?.location != next.location && _addressController.text != next.location) {
+        _addressController.text = next.location;
+      }
+    });
+
+    // Initialize controller text if empty (first load)
+    if (_addressController.text.isEmpty && state.location.isNotEmpty) {
+      _addressController.text = state.location;
+    }
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
@@ -57,6 +88,22 @@ class StepBasics extends ConsumerWidget {
               .animate()
               .fadeIn(delay: 900.ms)
               .scale(begin: const Offset(0.95, 0.95)),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _addressController,
+            decoration: InputDecoration(
+              labelText: 'Address',
+              hintText: 'e.g. Jalan Raya Ubud, Bali',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              prefixIcon: const Icon(Icons.map_outlined),
+              helperText: 'You can edit this if the auto-detected address is incorrect.',
+            ),
+            maxLines: 2,
+            onChanged: (val) => notifier.setLocation(val),
+          ).animate().fadeIn(delay: 950.ms),
           const SizedBox(height: 48),
           _buildHeader('How many guests can your place accommodate?')
               .animate()

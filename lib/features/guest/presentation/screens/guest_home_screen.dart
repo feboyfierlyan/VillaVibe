@@ -9,6 +9,7 @@ import 'package:villavibe/features/auth/data/repositories/auth_repository.dart';
 import 'package:villavibe/features/bookings/presentation/screens/my_bookings_screen.dart';
 import 'package:villavibe/features/favorites/presentation/screens/wishlist_screen.dart';
 import 'package:villavibe/features/guest/data/repositories/category_repository.dart';
+import 'package:villavibe/features/guest/domain/models/category.dart';
 import 'package:villavibe/features/guest/presentation/widgets/authenticated_profile_view.dart';
 import 'package:villavibe/features/guest/presentation/widgets/category_selector.dart';
 import 'package:villavibe/features/guest/presentation/widgets/login_prompt_view.dart';
@@ -239,22 +240,36 @@ class _GuestHomeScreenState extends ConsumerState<GuestHomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
               const SizedBox(height: 16),
               ref.watch(categoriesProvider).when(
-                    data: (categories) => CategorySelector(
-                      categories: categories,
-                      onCategoryChanged: (category) {
-                        if (category.label == 'All') {
-                          ref
-                              .read(searchFilterStateProvider.notifier)
-                              .setCategory(null);
-                        } else {
-                          ref
-                              .read(searchFilterStateProvider.notifier)
-                              .setCategory(category.id);
-                        }
-                      },
-                    ),
+                    data: (categories) {
+                      // Ensure "All" category exists
+                      final allCategories = [
+                        Category(
+                          id: 'all',
+                          label: 'All',
+                          iconName: 'layoutGrid',
+                        ),
+                        ...categories.where((c) => c.label != 'All'),
+                      ];
+
+                      return CategorySelector(
+                        categories: allCategories,
+                        selectedCategoryId: ref.watch(searchFilterStateProvider).selectedCategory,
+                        onCategoryChanged: (category) {
+                          if (category.label == 'All' || category.id == 'all') {
+                            ref
+                                .read(searchFilterStateProvider.notifier)
+                                .setCategory(null);
+                          } else {
+                            ref
+                                .read(searchFilterStateProvider.notifier)
+                                .setCategory(category.id);
+                          }
+                        },
+                      );
+                    },
                     loading: () => const SizedBox(
                         height: 44,
                         child: Center(child: CircularProgressIndicator())),

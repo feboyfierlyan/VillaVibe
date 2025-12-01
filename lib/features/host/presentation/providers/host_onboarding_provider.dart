@@ -308,7 +308,7 @@ class HostOnboardingNotifier extends StateNotifier<HostOnboardingState> {
         hostAvatar: hostAvatar,
         hostYearsHosting: currentProperty.hostYearsHosting,
         reviewsCount: currentProperty.reviewsCount,
-        categoryId: state.propertyType.toLowerCase(),
+        categoryId: state.setting.toLowerCase(),
         
         architectureStyle: state.architectureStyle,
         landSize: state.landSize,
@@ -402,7 +402,7 @@ class HostOnboardingNotifier extends StateNotifier<HostOnboardingState> {
         hostAvatar: hostAvatar,
         hostYearsHosting: 0,
         reviewsCount: 0,
-        categoryId: state.propertyType.toLowerCase(), // Map property type to category
+        categoryId: state.setting.toLowerCase(), // Map setting to category
         
         // Rich Data Fields
         architectureStyle: state.architectureStyle,
