@@ -41,7 +41,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAsxCiIUduOLTygdWOQg9IDKLVDp2q8ulQ',
+    apiKey: 'YOUR_FIREBASE_WEB_API_KEY',
     appId: '1:822958082668:web:94dc2718e9efab28da2649',
     messagingSenderId: '822958082668',
     projectId: 'villavibe-ff644',
@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBq3BYPg2u_qrzUpjKcX6sfeYook2kEBU8',
+    apiKey: 'YOUR_FIREBASE_ANDROID_API_KEY',
     appId: '1:822958082668:android:c9e8b36d41d97981da2649',
     messagingSenderId: '822958082668',
     projectId: 'villavibe-ff644',
@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCLN5FaSfYhNgPs3kxUQ0Af4nhFwVViYAw',
+    apiKey: 'YOUR_FIREBASE_IOS_API_KEY',
     appId: '1:822958082668:ios:ec20de0efc72418dda2649',
     messagingSenderId: '822958082668',
     projectId: 'villavibe-ff644',
@@ -68,7 +68,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCLN5FaSfYhNgPs3kxUQ0Af4nhFwVViYAw',
+    apiKey: 'YOUR_FIREBASE_MACOS_API_KEY',
     appId: '1:822958082668:ios:ec20de0efc72418dda2649',
     messagingSenderId: '822958082668',
     projectId: 'villavibe-ff644',
@@ -77,7 +77,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAsxCiIUduOLTygdWOQg9IDKLVDp2q8ulQ',
+    apiKey: 'YOUR_FIREBASE_WINDOWS_API_KEY',
     appId: '1:822958082668:web:b28544eaf5f08af3da2649',
     messagingSenderId: '822958082668',
     projectId: 'villavibe-ff644',
