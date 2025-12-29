@@ -104,7 +104,7 @@ Informasi Firebase berikut adalah **PUBLIK** dan tidak sensitif:
 ✅ **Pola Placeholder Jelas:** Semua nilai sensitif menggunakan prefix `YOUR_*`  
 ✅ **Git Ignore:** File `.env` sudah dikecualikan di `.gitignore`  
 ✅ **Tidak Ada Credentials:** Tidak ada password atau token yang di-commit  
-✅ **Pembersihan Terbaru:** Ada bukti PR #34 yang membersihkan API keys  
+✅ **Pembersihan Terbaru:** Ada bukti pull request yang berhasil membersihkan API keys  
 
 ---
 

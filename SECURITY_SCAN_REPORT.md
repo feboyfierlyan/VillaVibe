@@ -113,7 +113,7 @@ These values are not secrets and are designed to be included in client applicati
 ✅ **Placeholder Pattern:** All sensitive values use a clear `YOUR_*` prefix pattern  
 ✅ **Git Ignore:** `.env` files are properly excluded in `.gitignore`  
 ✅ **No Credentials:** No passwords, tokens, or authentication credentials found  
-✅ **Recent Cleanup:** Evidence of recent PR (#34) that redacted API keys  
+✅ **Recent Cleanup:** Evidence of recent pull request that successfully redacted API keys  
 
 ---
 
