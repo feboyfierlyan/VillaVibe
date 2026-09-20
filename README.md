@@ -11,26 +11,22 @@
 
 ## Table of Contents
 
-- [App Showcase](#-app-showcase)
-- [Key Features](#-key-features)
-- [Architecture](#-architecture)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Roadmap](#-roadmap)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [App Showcase](#app-showcase)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
 
 ---
 
 ## App Showcase
 
-| Guest Home | Villa Details | Host Dashboard |
-|:---:|:---:|:---:|
-| <img src="assets/screenshots/guest_home.png" width="250" alt="Guest Home" /> | <img src="assets/screenshots/villa_details.png" width="250" alt="Villa Details" /> | <img src="assets/screenshots/host_dashboard.png" width="250" alt="Host Dashboard" /> |
-| **Explore Villas** | **Book Your Stay** | **Manage Listings** |
+![VillaVibe guest, map, and host screens](assets/showcase/preview.gif)
 
-> *Note: Screenshots are placeholders. Please upload images to `assets/screenshots/`.*
+A short excerpt from the [published portfolio demo](https://feboyfierlyan.com/#projects), showing guest discovery, map search, and host listings. Original recording: [portfolio video](https://framerusercontent.com/assets/btIxXfcpOw4RgzN6s5OPbV1SIQg.mp4).
 
 ---
 
@@ -136,7 +132,7 @@ lib/
 
 ### Prerequisites
 
-*   [Flutter SDK](https://docs.flutter.dev/get-started/install) (>=3.2.0)
+*   [Flutter SDK](https://docs.flutter.dev/get-started/install) with Dart >=3.2.0 and <4.0.0 (see `pubspec.yaml`)
 *   [Firebase CLI](https://firebase.google.com/docs/cli)
 *   Android Studio / Xcode for emulator and simulator support.
 
@@ -144,8 +140,8 @@ lib/
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/yourusername/villavibe.git
-    cd villavibe
+    git clone https://github.com/feboyfierlyan/VillaVibe.git
+    cd VillaVibe
     ```
 
 2.  **Install dependencies**
@@ -188,9 +184,3 @@ Contributions are welcome! Please follow these steps:
 3.  Make your changes and commit them: `git commit -m 'Add some amazing feature'`
 4.  Push to the branch: `git push origin feature/amazing-feature`
 5.  Open a Pull Request.
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
